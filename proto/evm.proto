@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+option go_package = "root/proto";
+
+message EvmVote {
+    string Sign = 1;
+    int32 VoteNumber = 2;
+}
+
+message EvmVoteList {
+    int32 Year = 1;
+    repeated EvmVote Votes = 2;
+}

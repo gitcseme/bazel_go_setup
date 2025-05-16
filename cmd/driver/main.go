@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"root/internal/evm"
+	"root/proto"
 )
 
 func main() {
@@ -13,5 +14,10 @@ func main() {
 	evm.Vote("dhan")
 	evm.Vote("nowka")
 
-	fmt.Println("Votes:", evm.GetVotes())
+	oneVote := &proto.EvmVote {
+		Sign: "nowka",
+		VoteNumber: 1,
+	}
+
+	fmt.Println("Votes:", evm.GetVotes(), oneVote)
 }
