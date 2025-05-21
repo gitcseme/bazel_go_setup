@@ -1,0 +1,18 @@
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "evm",
+    srcs = ["evm.go"],
+    importpath = "bazel_go_setup/internal/evm",
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "//proto:proto_go_proto",
+        "@org_golang_google_protobuf//proto",
+    ],
+)
+
+go_test(
+    name = "evm_test",
+    srcs = ["evm_test.go"],
+    embed = [":evm"],
+)

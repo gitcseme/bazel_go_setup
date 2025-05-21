@@ -2,7 +2,8 @@ package main
 
 import (
 	"fmt"
-	"root/internal/evm"
+
+	"bazel_go_setup/internal/evm"
 )
 
 func main() {

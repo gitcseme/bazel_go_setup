@@ -1,5 +1,12 @@
 package evm
 
+import (
+	epb "bazel_go_setup/proto"
+	"fmt"
+
+	gpb "google.golang.org/protobuf/proto"
+)
+
 var (
 	nowka  string = "nowka"
 	langol string = "langol"
@@ -14,6 +21,19 @@ var (
 
 func Vote(sign string) {
 	votes[sign]++
+
+	vte := &epb.EvmVote{
+		Sign:       sign,
+		VoteNumber: 1,
+	}
+
+	data, err := gpb.Marshal(vte)
+	if err != nil {
+		fmt.Println("Error marshalling vote data:", err)
+		return
+	}
+
+	fmt.Println("Vote data:", data)
 }
 
 func GetVotes() map[string]int {
