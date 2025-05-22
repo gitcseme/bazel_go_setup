@@ -3,6 +3,7 @@ package evm
 import (
 	epb "bazel_go_setup/proto"
 	"fmt"
+	"os"
 
 	gpb "google.golang.org/protobuf/proto"
 )
@@ -19,21 +20,72 @@ var (
 	}
 )
 
-func Vote(sign string) {
-	votes[sign]++
-
-	vte := &epb.EvmVote{
-		Sign:       sign,
-		VoteNumber: 1,
+func StoreVote() {
+	var evmVoteList []*epb.EvmVote
+	for k, v := range votes {
+		evmVoteList = append(evmVoteList, &epb.EvmVote{
+			Sign:       k,
+			VoteNumber: int32(v),
+		})
 	}
 
-	data, err := gpb.Marshal(vte)
+	file, err := os.Create("votes.txt")
 	if err != nil {
-		fmt.Println("Error marshalling vote data:", err)
+		fmt.Println("Error creating file:", err)
+		return
+	}
+	defer file.Close()
+
+	voteList := &epb.EvmVoteList{
+		Year:  2025,
+		Votes: evmVoteList,
+	}
+
+	binaryData, err := gpb.Marshal(voteList)
+	if err != nil {
+		fmt.Println("Error marshalling votes:", err)
 		return
 	}
 
-	fmt.Println("Vote data:", data)
+	_, err = file.Write(binaryData)
+	if err != nil {
+		fmt.Println("Error writing to file:", err)
+		return
+	}
+
+	fmt.Println("Marshalled votes:", binaryData)
+}
+
+func LoadVote() {
+	file, err := os.Open("votes.txt")
+	if err != nil {
+		fmt.Println("Error opening file:", err)
+		return
+	}
+	defer file.Close()
+
+	data, err := os.ReadFile("votes.txt")
+	if err != nil {
+		fmt.Println("Error reading file:", err)
+		return
+	}
+
+	voteList := &epb.EvmVoteList{}
+	err = gpb.Unmarshal(data, voteList)
+	if err != nil {
+		fmt.Println("Error unmarshalling votes:", err)
+		return
+	}
+
+	for _, v := range voteList.Votes {
+		votes[v.Sign] = int(v.VoteNumber)
+	}
+
+	fmt.Println("Unmarshalled votes:", votes)
+}
+
+func Vote(sign string) {
+	votes[sign]++
 }
 
 func GetVotes() map[string]int {
